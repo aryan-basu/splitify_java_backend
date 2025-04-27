@@ -1,6 +1,7 @@
 package com.aryan.splitify.controller;
 
 
+import com.aryan.splitify.Entity.Friends;
 import com.aryan.splitify.Entity.User;
 import com.aryan.splitify.Services.UserService;
 import org.bson.types.ObjectId;
@@ -32,6 +33,17 @@ public class UserController {
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+    @GetMapping("/friends")
+    public ResponseEntity<?>getFriends(){
+        Authentication authentication=SecurityContextHolder.getContext().getAuthentication();
+        String userEmail=authentication.getName();
+        User user = userService.getuser(userEmail);
+        List<Friends> userFriends=user.getFriends();
+
+
+        return new ResponseEntity<>(userFriends,HttpStatus.OK);
+
+    }
 
     @PostMapping("/add-friend/{id}")
     public ResponseEntity<?> addfriend(@PathVariable ObjectId id) {
@@ -47,16 +59,29 @@ public class UserController {
         User newFriend = userService.getUserById(id);
         User currUser = userService.getuser(userEmail);
 
-          System.out.println("curr usrr "+ currUser);
-        System.out.println("new frnd "+ newFriend);
+
 
         if (currUser == null || newFriend == null) {
             return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
         }
+// Create Friend object for newFriend
+        Friends friendInfo = new Friends();
+        friendInfo.setId(newFriend.getId());
+        friendInfo.setName(newFriend.getName());
+        friendInfo.setEmail(newFriend.getEmail());
 
-        currUser.getFriends().add(newFriend.getId().toHexString());
-        newFriend.getFriends().add(currUser.getId().toHexString());
+// Add to current user's friends list
+        currUser.getFriends().add(friendInfo);
 
+// (Optional) - Also add current user as friend to newFriend
+        Friends currUserInfo = new Friends();
+        currUserInfo.setId(currUser.getId());
+        currUserInfo.setName(currUser.getName());
+        currUserInfo.setEmail(currUser.getEmail());
+
+        newFriend.getFriends().add(currUserInfo);
+
+// Save both users back
         userService.saveNewUser(currUser);
         userService.saveNewUser(newFriend);
 

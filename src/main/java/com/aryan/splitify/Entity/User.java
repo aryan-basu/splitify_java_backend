@@ -22,5 +22,5 @@ public class User {
     private String email; // email field should be lowercase
     private String password;
 
-    private List<String> friends = new ArrayList<>();  // Default empty list
+    private List<Friends> friends = new ArrayList<>();  // Default empty list
 }

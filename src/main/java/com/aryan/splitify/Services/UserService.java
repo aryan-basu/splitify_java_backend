@@ -31,4 +31,11 @@ public class UserService {
     public User getUserById(ObjectId id) {
         return userRepository.findById(id).orElse(null);
     }
+    public List<User> getFriendsDetails(List<String> friendIds) {
+        List<ObjectId> objectIds = friendIds.stream()
+                .map(ObjectId::new)
+                .toList();
+        return userRepository.findAllById(objectIds);
+    }
+
 }
