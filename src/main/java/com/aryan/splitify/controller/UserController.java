@@ -9,6 +9,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,12 +33,22 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @PostMapping("/add-friend")
-    public ResponseEntity<?> addfriend(@RequestParam String friendEmail, @RequestParam String userEmail) {
-        System.out.println(friendEmail + " " + userEmail);
+    @PostMapping("/add-friend/{id}")
+    public ResponseEntity<?> addfriend(@PathVariable ObjectId id) {
 
-        User newFriend = userService.getuser(friendEmail);
+        Authentication authentication=SecurityContextHolder.getContext().getAuthentication();
+        String userEmail=authentication.getName();
+
+
+
+
+
+
+        User newFriend = userService.getUserById(id);
         User currUser = userService.getuser(userEmail);
+
+          System.out.println("curr usrr "+ currUser);
+        System.out.println("new frnd "+ newFriend);
 
         if (currUser == null || newFriend == null) {
             return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);

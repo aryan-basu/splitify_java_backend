@@ -2,6 +2,7 @@ package com.aryan.splitify.Services;
 
 import com.aryan.splitify.Entity.User;
 import com.aryan.splitify.Repository.UserRepository;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,5 +27,8 @@ public class UserService {
 
     public User getuser(String Email){
        return userRepository.findByEmail(Email);
+    }
+    public User getUserById(ObjectId id) {
+        return userRepository.findById(id).orElse(null);
     }
 }
