@@ -3,6 +3,7 @@ package com.aryan.splitify.controller;
 
 import com.aryan.splitify.Entity.User;
 import com.aryan.splitify.Services.UserService;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,26 @@ public class UserController {
             return new ResponseEntity<>(all, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @PostMapping("/add-friend")
+    public ResponseEntity<?> addfriend(@RequestParam String friendEmail, @RequestParam String userEmail) {
+        System.out.println(friendEmail + " " + userEmail);
+
+        User newFriend = userService.getuser(friendEmail);
+        User currUser = userService.getuser(userEmail);
+
+        if (currUser == null || newFriend == null) {
+            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        }
+
+        currUser.getFriends().add(newFriend.getId().toHexString());
+        newFriend.getFriends().add(currUser.getId().toHexString());
+
+        userService.saveNewUser(currUser);
+        userService.saveNewUser(newFriend);
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 
