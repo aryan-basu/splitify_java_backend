@@ -1,6 +1,7 @@
 package com.aryan.splitify.controller;
 
 
+import com.aryan.splitify.Entity.DebtDetail;
 import com.aryan.splitify.Entity.Friends;
 import com.aryan.splitify.Entity.User;
 import com.aryan.splitify.Services.UserService;
@@ -90,6 +91,16 @@ public class UserController {
 
 
 
+
+    @GetMapping("/transactions")
+        public ResponseEntity<?>getAllTraansaction(){
+            Authentication authentication=SecurityContextHolder.getContext().getAuthentication();
+            String userEmail=authentication.getName();
+
+        List<DebtDetail> Transactions=userService.getDebtDetailsForUser(userEmail);
+
+        return new ResponseEntity<>(Transactions,HttpStatus.OK);
+        }
 
 
 
