@@ -25,26 +25,38 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-
     @GetMapping
-    public ResponseEntity<?> getAllUsers(){
-        List<User> all = userService.getAll();
-        if (all != null && !all.isEmpty()) {
-            return new ResponseEntity<>(all, HttpStatus.OK);
+    public ResponseEntity<?> getAllUsers(@RequestParam(required = false) String query) {
+        List<User> users;
+
+        if (query != null && !query.trim().isEmpty()) {
+            users = userService.searchUsersByNameOrEmail(query);
+        } else {
+            users = userService.getAll();
+        }
+
+        if (users != null && !users.isEmpty()) {
+            return new ResponseEntity<>(users, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+
     @GetMapping("/friends")
-    public ResponseEntity<?>getFriends(){
-        Authentication authentication=SecurityContextHolder.getContext().getAuthentication();
-        String userEmail=authentication.getName();
+    public ResponseEntity<?> getFriends(@RequestParam(required = false) String query) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = authentication.getName();
         User user = userService.getuser(userEmail);
-        List<Friends> userFriends=user.getFriends();
 
+        List<Friends> userFriends = user.getFriends(); // Assuming Friends holds ObjectId or minimal info
 
-        return new ResponseEntity<>(userFriends,HttpStatus.OK);
+        if (query != null && !query.trim().isEmpty()) {
+            List<User> filteredFriends = userService.searchFriendsByNameOrEmail(userFriends, query);
+            return new ResponseEntity<>(filteredFriends, HttpStatus.OK);
+        }
 
+        return new ResponseEntity<>(userFriends, HttpStatus.OK);
     }
+
 
     @PostMapping("/add-friend/{id}")
     public ResponseEntity<?> addfriend(@PathVariable ObjectId id) {

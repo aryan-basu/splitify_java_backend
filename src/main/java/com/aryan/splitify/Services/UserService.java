@@ -1,9 +1,6 @@
 package com.aryan.splitify.Services;
 
-import com.aryan.splitify.Entity.DebtDetail;
-import com.aryan.splitify.Entity.Expense;
-import com.aryan.splitify.Entity.Split;
-import com.aryan.splitify.Entity.User;
+import com.aryan.splitify.Entity.*;
 import com.aryan.splitify.Repository.ExpenseRepository;
 import com.aryan.splitify.Repository.UserRepository;
 import org.bson.types.ObjectId;
@@ -13,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -44,6 +42,18 @@ public class UserService {
                 .map(ObjectId::new)
                 .toList();
         return userRepository.findAllById(objectIds);
+    }
+
+
+    public List<User> searchUsersByNameOrEmail(String query) {
+        return userRepository.findByNameIgnoreCaseContainingOrEmailIgnoreCaseContaining(query, query);
+    }
+    public List<User> searchFriendsByNameOrEmail(List<Friends> friends, String query) {
+        List<ObjectId> friendIds = friends.stream()
+                .map(Friends::getId) // or however you're storing friend references
+                .collect(Collectors.toList());
+
+        return userRepository.findByIdInAndNameIgnoreCaseContainingOrEmailIgnoreCaseContaining(friendIds, query, query);
     }
 
 
