@@ -1,6 +1,8 @@
 package com.aryan.splitify.Config;
 
 
+import com.aryan.splitify.filter.JwtFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -10,11 +12,14 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 public class SpringSecurityConfig {
 
     private final UserDetailsService userDetailsService;
+    @Autowired
+    private JwtFilter jwtFilter;
 
     public SpringSecurityConfig(UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
@@ -29,7 +34,8 @@ public class SpringSecurityConfig {
                         .requestMatchers("/user/**", "/expense/**").authenticated()
                         .anyRequest().permitAll()
                 )
-                .httpBasic(httpBasic -> {}); // ✅ Correct way now
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
 
         return http.build();
     }
@@ -43,4 +49,6 @@ public class SpringSecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(); // Password encoder for bcrypt
     }
+
+
 }

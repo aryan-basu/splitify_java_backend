@@ -26,7 +26,7 @@ public class UserController {
     private UserService userService;
 
     @GetMapping
-    public ResponseEntity<?> getAllUsers(@RequestParam(required = false) String query) {
+    public ResponseEntity<?> getAllUsers(@RequestParam(required = false) String query, @RequestParam(required = false) String lastId) {
         List<User> users;
 
         if (query != null && !query.trim().isEmpty()) {
