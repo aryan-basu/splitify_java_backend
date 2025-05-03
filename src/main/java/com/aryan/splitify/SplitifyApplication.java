@@ -1,5 +1,6 @@
 package com.aryan.splitify;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -11,7 +12,14 @@ import org.springframework.transaction.PlatformTransactionManager;
 public class SplitifyApplication {
 
 	public static void main(String[] args) {
+
+
+		// Set as system properties so Spring can use them
+		Dotenv dotenv = Dotenv.configure().load();
+		System.setProperty("JWT_SECRET", dotenv.get("JWT_SECRET"));
+		System.setProperty("MONGODB_URI", dotenv.get("MONGODB_URI"));
 		SpringApplication.run(SplitifyApplication.class, args);
+
 	}
 
 
